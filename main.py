@@ -28,8 +28,9 @@ ratios:  q_tau(h) = p1 * exp(Q_tau^w({r_h})).  An hour whose pool is empty falls
 persistence spread, so the output is always schema-valid.
 
 Validation on the kit's four practice cases (mean pinball loss on the log scale, the contest's
-scoring, against the launches' actual release-day curves): this model 0.229 overall
-(p00 0.352, p01 0.213, p02 0.149, p03 0.202); the house persistence baseline scores 0.387.
+scoring, against the launches' actual release-day curves): this model 0.210 overall
+(p00 0.288, p01 0.197, p02 0.151, p03 0.203); the house persistence baseline scores 0.387.
+Leave-one-out over the 29 pool launches: 0.285 for this model, 0.310 for the pool unweighted.
 
 Run: MAKEFUN_INPUT_DIR=input MAKEFUN_OUTPUT_DIR=out python3 main.py
 The grader runs `python3 -P -s /bot/main.py` with one case file in the input dir.
@@ -53,9 +54,12 @@ MAX_Q = 1_000_000_000.0
 # A comparable whose release-day peak exceeds e^PEAK_LN_MAX times its first hour was a
 # simultaneous mid-day unlock, a different regime: excluded from the pool.
 PEAK_LN_MAX = 3.5
-# Gaussian kernel bandwidths for the two similarity features.
-BW_F2 = 0.35
-BW_G = 0.45
+# Gaussian kernel bandwidths for the two similarity features. Round 2 retune (0.35/0.45 ->
+# 0.6/0.25): leave-one-out over the 29 pool launches improves 0.287 -> 0.285 and the four
+# practice cases improve 0.229 -> 0.210; the tighter g bandwidth is what carries it -- the
+# single hour before midnight is the sharpest signal of how the day will unfold.
+BW_F2 = 0.6
+BW_G = 0.25
 
 
 def parse_ts(text):
